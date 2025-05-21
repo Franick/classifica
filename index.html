@@ -1,13 +1,49 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="style.css">
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Vite Site</title>
+  <title>Football Leaderboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Welcome to My Vite Site</h1>
-  <p>This is a test website created directly on GitHub.</p>
+  <div class="container">
+    <h1>Football Leaderboard</h1>
+    
+    <table id="leaderboard">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>Games Played</th>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Points</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-body">
+        <!-- Leaderboard entries will go here -->
+      </tbody>
+    </table>
+    
+    <h2>Add New Team</h2>
+    <form id="team-form">
+      <label for="team-name">Team Name:</label>
+      <input type="text" id="team-name" required>
+      
+      <label for="games-played">Games Played:</label>
+      <input type="number" id="games-played" required>
+      
+      <label for="wins">Wins:</label>
+      <input type="number" id="wins" required>
+      
+      <label for="losses">Losses:</label>
+      <input type="number" id="losses" required>
+      
+      <button type="submit">Add Team</button>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
