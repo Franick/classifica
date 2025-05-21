@@ -1,114 +1,114 @@
-// Load stored seasons from localStorage or initialize an empty object
-let seasons = JSON.parse(localStorage.getItem('seasons')) || {};
+// Initialize data
+let seasons = JSON.parse(localStorage.getItem('seasons')) || [];
+let currentSeason = null;
+let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || {};
 
-// Initialize a sample season (for testing, remove this later if not needed)
-function initializeSeason(seasonName) {
-    return {
-        name: seasonName,
-        teams: [
-            { name: 'Team A', draws: 5, points: 15 },
-            { name: 'Team B', draws: 3, points: 12 },
-            { name: 'Team C', draws: 7, points: 21 },
-        ]
-    };
-}
-
-// Add new season to the list
-function addNewSeason() {
-    const seasonName = document.getElementById("season-name").value.trim();
-    if (!seasonName) return alert("Please enter a season name");
-
-    if (seasons[seasonName]) {
-        alert("Season already exists");
-        return;
+// Load seasons and leaderboard data
+window.onload = function() {
+    loadSeasons();
+    if (seasons.length > 0) {
+        currentSeason = seasons[0].name; // Set the default season
+        loadLeaderboard();
     }
+};
 
-    const newSeason = initializeSeason(seasonName);
-    seasons[seasonName] = newSeason;
-    
-    // Save the updated seasons to localStorage
-    localStorage.setItem('seasons', JSON.stringify(seasons));
-
-    // Add the season to the dropdown
-    const seasonSelect = document.getElementById("seasons-dropdown");
-    const option = document.createElement("option");
-    option.value = seasonName;
-    option.textContent = seasonName;
-    seasonSelect.appendChild(option);
-
-    // Select the new season
-    seasonSelect.value = seasonName;
-    switchSeason();
+// Add a new season
+function addSeason() {
+    const seasonName = document.getElementById('season-name').value.trim();
+    if (seasonName && !seasons.some(season => season.name === seasonName)) {
+        const newSeason = { name: seasonName, teams: [] };
+        seasons.push(newSeason);
+        currentSeason = seasonName; // Set the current season
+        localStorage.setItem('seasons', JSON.stringify(seasons));
+        loadSeasons();
+        loadLeaderboard();
+    }
 }
 
-// Switch seasons and display the leaderboard
-function switchSeason() {
-    const seasonName = document.getElementById("seasons-dropdown").value;
-    if (!seasonName || !seasons[seasonName]) return;
-
-    const season = seasons[seasonName];
-    renderLeaderboard(season);
-}
-
-// Render the leaderboard for a given season
-function renderLeaderboard(season) {
-    const tbody = document.querySelector("#leaderboard-table tbody");
-    tbody.innerHTML = ""; // Clear existing rows
-
-    // Sort teams by points and then by draws (in case of a tie)
-    const sortedTeams = season.teams.sort((a, b) => b.points - a.points || b.draws - a.draws);
-
-    sortedTeams.forEach((team, index) => {
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${team.name}</td>
-            <td>${team.draws}</td>
-            <td>${team.points}</td>
-        `;
-        
-        tbody.appendChild(row);
+// Load and display all seasons
+function loadSeasons() {
+    const seasonsList = document.getElementById('seasons-list');
+    seasonsList.innerHTML = '';
+    seasons.forEach(season => {
+        const li = document.createElement('li');
+        li.textContent = season.name;
+        li.onclick = () => setSeason(season.name);
+        seasonsList.appendChild(li);
     });
 }
 
-// Enable drag-and-drop functionality
-const tableBody = document.querySelector("#leaderboard-table tbody");
+// Set the current season
+function setSeason(seasonName) {
+    currentSeason = seasonName;
+    loadLeaderboard();
+}
 
-new Sortable(tableBody, {
-    onEnd: function (evt) {
-        const teams = Array.from(tableBody.children);
-        teams.forEach((row, index) => {
-            const teamName = row.children[1].textContent;
-            const seasonName = document.getElementById("seasons-dropdown").value;
-            const season = seasons[seasonName];
+// Add a new team to the leaderboard
+function addTeam() {
+    const teamName = document.getElementById('team-name').value.trim();
+    const teamPoints = parseInt(document.getElementById('team-points').value.trim());
+    if (teamName && !isNaN(teamPoints) && teamPoints >= 0) {
+        if (!leaderboard[currentSeason]) {
+            leaderboard[currentSeason] = [];
+        }
 
-            // Reorder teams based on new index
-            const teamIndex = season.teams.findIndex(team => team.name === teamName);
-            const [movedTeam] = season.teams.splice(teamIndex, 1);
-            season.teams.splice(index, 0, movedTeam);
+        leaderboard[currentSeason].push({ name: teamName, points: teamPoints });
+        leaderboard[currentSeason].sort((a, b) => b.points - a.points); // Sort by points
+        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+        loadLeaderboard();
+    }
+}
+
+// Load and display the leaderboard for the current season
+function loadLeaderboard() {
+    const leaderboardList = document.getElementById('leaderboard');
+    leaderboardList.innerHTML = '';
+    if (leaderboard[currentSeason]) {
+        leaderboard[currentSeason].forEach((team, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${team.name} - ${team.points} points`;
+            li.draggable = true;
+            li.dataset.index = index;
+            li.ondragstart = dragStart;
+            li.ondragover = dragOver;
+            li.ondrop = drop;
+            li.ondragenter = dragEnter;
+            li.ondragleave = dragLeave;
+            leaderboardList.appendChild(li);
         });
-
-        // Save the updated seasons to localStorage
-        localStorage.setItem('seasons', JSON.stringify(seasons));
     }
-});
+}
 
-// Initial render
-window.onload = () => {
-    // Populate the seasons dropdown
-    const seasonSelect = document.getElementById("seasons-dropdown");
-    for (const seasonName in seasons) {
-        const option = document.createElement("option");
-        option.value = seasonName;
-        option.textContent = seasonName;
-        seasonSelect.appendChild(option);
-    }
+// Drag and Drop Handling
+function dragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.dataset.index);
+    e.target.classList.add('dragging');
+}
 
-    // If a season is already selected, display its leaderboard
-    if (seasonSelect.value) {
-        switchSeason();
-    } else {
-        addNewSeason(); // Adds a default season for testing purposes
+function dragOver(e) {
+    e.preventDefault();
+    e.target.classList.add('drag-over');
+}
+
+function dragEnter(e) {
+    e.preventDefault();
+}
+
+function dragLeave(e) {
+    e.target.classList.remove('drag-over');
+}
+
+function drop(e) {
+    e.preventDefault();
+    e.target.classList.remove('drag-over');
+    const draggedIndex = e.dataTransfer.getData('text/plain');
+    const droppedIndex = e.target.dataset.index;
+
+    if (draggedIndex !== droppedIndex) {
+        const draggedTeam = leaderboard[currentSeason][draggedIndex];
+        leaderboard[currentSeason].splice(draggedIndex, 1);
+        leaderboard[currentSeason].splice(droppedIndex, 0, draggedTeam);
+        localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+        loadLeaderboard();
     }
-};
+}
