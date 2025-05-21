@@ -1,49 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Football Leaderboard</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Football Leaderboard</h1>
-    
-    <table id="leaderboard">
-      <thead>
-        <tr>
-          <th>Team</th>
-          <th>Games Played</th>
-          <th>Wins</th>
-          <th>Losses</th>
-          <th>Points</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard-body">
-        <!-- Leaderboard entries will go here -->
-      </tbody>
-    </table>
-    
-    <h2>Add New Team</h2>
-    <form id="team-form">
-      <label for="team-name">Team Name:</label>
-      <input type="text" id="team-name" required>
-      
-      <label for="games-played">Games Played:</label>
-      <input type="number" id="games-played" required>
-      
-      <label for="wins">Wins:</label>
-      <input type="number" id="wins" required>
-      
-      <label for="losses">Losses:</label>
-      <input type="number" id="losses" required>
-      
-      <button type="submit">Add Team</button>
-    </form>
-  </div>
 
-  <script src="script.js"></script>
+    <div class="container">
+        <h1>Football League Leaderboard</h1>
+
+        <label for="season-name">Add New Season:</label>
+        <input type="text" id="season-name" placeholder="Season name">
+        <button onclick="addNewSeason()">Add Season</button>
+
+        <label for="seasons-dropdown">Select Season:</label>
+        <select id="seasons-dropdown" onchange="switchSeason()">
+            <option value="">Select a season</option>
+        </select>
+
+        <table id="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Team</th>
+                    <th>Draws</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Teams will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
