@@ -3,39 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
+    <title>Team Leaderboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <h1>Team Leaderboard</h1>
 
-    <div class="container">
-        <h1>Football League Leaderboard</h1>
-
-        <label for="season-name">Add New Season:</label>
-        <input type="text" id="season-name" placeholder="Season name">
-        <button onclick="addNewSeason()">Add Season</button>
-
-        <label for="seasons-dropdown">Select Season:</label>
-        <select id="seasons-dropdown" onchange="switchSeason()">
-            <option value="">Select a season</option>
-        </select>
-
-        <table id="leaderboard-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Team</th>
-                    <th>Draws</th>
-                    <th>Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Teams will be populated here -->
-            </tbody>
-        </table>
+    <!-- Add a new season -->
+    <div>
+        <label for="season-name">Season Name:</label>
+        <input type="text" id="season-name" placeholder="Enter season name">
+        <button onclick="addSeason()">Add Season</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <h2>Seasons</h2>
+    <ul id="seasons-list">
+        <!-- Seasons will appear here -->
+    </ul>
+
+    <h2>Team Management</h2>
+    <div>
+        <label for="team-name">Team Name:</label>
+        <input type="text" id="team-name" placeholder="Enter team name">
+        <label for="team-points">Points:</label>
+        <input type="number" id="team-points" placeholder="Enter points">
+        <button onclick="addTeam()">Add Team</button>
+    </div>
+
+    <h2>Leaderboard</h2>
+    <ul id="leaderboard">
+        <!-- Leaderboard will be populated here -->
+    </ul>
+
     <script src="script.js"></script>
 </body>
 </html>
